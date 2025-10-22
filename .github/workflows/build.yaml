@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Android APK
 on: [push, workflow_dispatch]
 
 jobs:
@@ -9,8 +9,10 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '11'
-      - run: chmod +x ./gradlew && ./gradlew assembleDebug
+          distribution: 'temurin'
+      - run: chmod +x ./gradlew
+      - run: ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: app-apk
+          name: AutoQAnswer-App
           path: app/build/outputs/apk/debug/app-debug.apk
