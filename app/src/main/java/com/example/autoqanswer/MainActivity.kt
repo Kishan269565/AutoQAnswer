@@ -44,3 +44,31 @@ class MainActivity : AppCompatActivity() {
             this,
             arrayOf(android.Manifest.permission.CAMERA),
             cameraPermissionCode
+        )
+    }
+    
+    private fun startCameraActivity() {
+        val intent = Intent(this, CameraActivity::class.java)
+        startActivity(intent)
+    }
+    
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        if (requestCode == cameraPermissionCode) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCameraActivity()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Camera permission is required to use this app",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+}
