@@ -1,0 +1,63 @@
+name: Build Android APK
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+    - name: Create missing files (if needed)
+      run: |
+        if [ ! -f "settings.gradle.kts" ]; then
+cat << 'EOF' > settings.gradle.kts
+include(":app")
+EOF
+        fi
+
+        if [ ! -f "app/build.gradle.kts" ]; then
+          mkdir -p app
+cat << 'EOF' > app/build.gradle.kts
+plugins {
+    id("com.android.application")
+    kotlin("android")
+}
+android {
+    compileSdk = 34
+    defaultConfig {
+        applicationId = "com.example.autoqanswer"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+        }
+    }
+}
+dependencies {
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+}
+EOF
+        fi
+
+    - name: Ensure Gradle wrapper is executable
+      run: chmod +x ./gradlew
+
+    - name: Build APK
+      run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-debug.apk
+        path: app/build/outputs/apk/debug/*.apk
