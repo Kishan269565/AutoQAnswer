@@ -16,11 +16,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Make Gradle executable
-        run: chmod +x ./gradlew
+      - name: Install Correct Gradle Version
+        run: |
+          # Download and install Gradle 8.0
+          wget https://services.gradle.org/distributions/gradle-8.0-bin.zip
+          sudo unzip -d /usr/local gradle-8.0-bin.zip
+          sudo ln -sf /usr/local/gradle-8.0/bin/gradle /usr/local/bin/gradle
+          gradle --version
 
-      - name: Build Debug APK with correct Gradle version
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+      - name: Build Debug APK
+        run: gradle assembleDebug --stacktrace --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
