@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Camera Preview -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/cameraPreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Status Bar -->
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#80000000"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:padding="16dp"
+        android:text="Camera active - Scanning for technical questions..." />
+
+    <!-- Answer Container -->
+    <LinearLayout
+        android:id="@+id/answerContainer"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:background="#E0FFFFFF"
+        android:padding="16dp"
+        android:visibility="gone"
+        android:elevation="8dp"
+        android:backgroundTint="#E0FFFFFF">
+
+        <TextView
+            android:id="@+id/questionText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#D32F2F"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#B0B0B0"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/answerText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#2E7D32"
+            android:textSize="14sp"
+            android:text="Answer will appear here..." />
+
+    </LinearLayout>
+
+</RelativeLayout>
