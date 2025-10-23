@@ -1,13 +1,18 @@
 package com.example.autoqanswer
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.autoqanswer.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     
     private lateinit var binding: ActivityMainBinding
+    private val cameraPermissionCode = 100
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,13 +20,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         
         binding.startButton.setOnClickListener {
-            // Start camera activity
-            val intent = Intent(this, CameraActivity::class.java)
-            startActivity(intent)
+            if (hasCameraPermission()) {
+                startCameraActivity()
+            } else {
+                requestCameraPermission()
+            }
         }
         
         binding.stopButton.setOnClickListener {
-            finish() // Close app
+            finish()
         }
     }
-}
+    
+    private fun hasCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            android.Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+    
+    private fun requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(android.Manifest.permission.CAMERA),
+            cameraPermissionCode
