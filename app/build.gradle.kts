@@ -13,11 +13,15 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        
+        // Add this to prevent multidex issues
+        multiDexEnabled = true
     }
 
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
+            isDebuggable = true
         }
     }
     
@@ -36,12 +40,12 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     
-    // FIXED: Updated ML Kit Text Recognition dependency
+    // Fixed ML Kit dependency
     implementation("com.google.mlkit:text-recognition:16.0.0")
-    
-    // Alternative if you need the latest version:
-    // implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
     
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    
+    // Add multidex support
+    implementation("androidx.multidex:multidex:2.0.1")
 }
