@@ -35,7 +35,13 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
-    implementation("com.google.mlkit:text-recognition:18.0.2")
+    
+    // FIXED: Updated ML Kit Text Recognition dependency
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+    
+    // Alternative if you need the latest version:
+    // implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
+    
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 }
