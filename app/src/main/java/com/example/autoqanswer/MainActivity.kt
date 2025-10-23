@@ -1,55 +1,27 @@
 package com.example.autoqanswer
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.Button
-import android.widget.TextView
-import androidx.appcompat.widget.LinearLayoutCompat
+import com.example.autoqanswer.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     
+    private lateinit var binding: ActivityMainBinding
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         
-        // Create a simple UI to prevent crashes
-        val layout = LinearLayoutCompat(this).apply {
-            orientation = LinearLayoutCompat.VERTICAL
-            setPadding(50, 50, 50, 50)
+        binding.startButton.setOnClickListener {
+            // Start camera activity
+            val intent = Intent(this, CameraActivity::class.java)
+            startActivity(intent)
         }
         
-        val title = TextView(this).apply {
-            text = "AutoQAnswer"
-            textSize = 24f
-            setPadding(0, 0, 0, 50)
+        binding.stopButton.setOnClickListener {
+            finish() // Close app
         }
-        
-        val status = TextView(this).apply {
-            text = "App is working!"
-            textSize = 16f
-            setPadding(0, 0, 0, 30)
-        }
-        
-        val startButton = Button(this).apply {
-            text = "Start Capture"
-            setOnClickListener {
-                status.text = "Capture started - Processing..."
-                // Add your capture logic here later
-            }
-        }
-        
-        val stopButton = Button(this).apply {
-            text = "Stop Capture"
-            setOnClickListener {
-                status.text = "Capture stopped"
-                // Add your stop logic here later
-            }
-        }
-        
-        layout.addView(title)
-        layout.addView(status)
-        layout.addView(startButton)
-        layout.addView(stopButton)
-        
-        setContentView(layout)
     }
 }
