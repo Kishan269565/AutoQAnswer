@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -69,10 +70,17 @@ class CameraActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
     
-    private fun processImage(imageProxy: android.graphics.Image) {
-        if (isProcessing) return
+    private fun processImage(imageProxy: ImageProxy) {
+        if (isProcessing) {
+            imageProxy.close()
+            return
+        }
         
-        val mediaImage = imageProxy.image ?: return
+        val mediaImage = imageProxy.image ?: run {
+            imageProxy.close()
+            return
+        }
+        
         val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
         
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -90,20 +98,29 @@ class CameraActivity : AppCompatActivity() {
                     }
                     
                     CoroutineScope(Dispatchers.Main).launch {
-                        val answer = answerProvider.getAnswer(detectedText)
-                        
-                        runOnUiThread {
-                            displayQuestionAndAnswer(detectedText, answer)
-                            binding.statusText.text = "Answer displayed - Scanning for next question..."
-                        }
-                        
-                        android.os.Handler().postDelayed({
-                            isProcessing = false
+                        try {
+                            val answer = answerProvider.getAnswer(detectedText)
+                            
                             runOnUiThread {
-                                clearDisplay()
-                                binding.statusText.text = "Scanning for next question..."
+                                displayQuestionAndAnswer(detectedText, answer)
+                                binding.statusText.text = "Answer displayed - Scanning for next question..."
                             }
-                        }, 15000)
+                            
+                            // Reset after delay
+                            android.os.Handler().postDelayed({
+                                isProcessing = false
+                                runOnUiThread {
+                                    clearDisplay()
+                                    binding.statusText.text = "Scanning for next question..."
+                                }
+                            }, 15000)
+                        } catch (e: Exception) {
+                            Log.e("CameraActivity", "Error getting answer", e)
+                            runOnUiThread {
+                                binding.statusText.text = "Error processing question"
+                            }
+                            isProcessing = false
+                        }
                     }
                 }
             }
