@@ -18,7 +18,6 @@ jobs:
 
       - name: Install Correct Gradle Version
         run: |
-          # Download and install Gradle 8.0
           wget https://services.gradle.org/distributions/gradle-8.0-bin.zip
           sudo unzip -d /usr/local gradle-8.0-bin.zip
           sudo ln -sf /usr/local/gradle-8.0/bin/gradle /usr/local/bin/gradle
