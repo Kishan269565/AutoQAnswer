@@ -99,7 +99,7 @@ class CameraActivity : AppCompatActivity() {
                     
                     CoroutineScope(Dispatchers.Main).launch {
                         try {
-                            val answer = answerProvider.getAnswer(detectedText)
+                            val answer = answerProvider.getAnswer(detectedText, this)
                             
                             runOnUiThread {
                                 displayQuestionAndAnswer(detectedText, answer)
