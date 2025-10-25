@@ -99,7 +99,7 @@ class CameraActivity : AppCompatActivity() {
                     
                     CoroutineScope(Dispatchers.Main).launch {
                         try {
-                              val answer = answerProvider.getAnswer(detectedText, this@CameraActivity)                            
+                             val answer = answerProvider.getAnswer(detectedText)
                             runOnUiThread {
                                 displayQuestionAndAnswer(detectedText, answer)
                                 binding.statusText.text = "Answer displayed - Scanning for next question..."
