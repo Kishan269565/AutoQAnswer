@@ -19,7 +19,7 @@ class AnswerProvider {
         .build()
 
     // ✅ Your HuggingFace API key
-    private val huggingFaceToken = "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"
+    private val huggingFaceToken = "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"
 
     // ✅ Rate limit
     private var apiCallCount = 0
