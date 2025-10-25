@@ -71,15 +71,15 @@ class AnswerProvider {
         return getOfflineAnswer(question)
     }
 
-    // ✅ API #1 — HuggingFace (google/flan-t5-large)
+    // ✅ API #1 — HuggingFace (Stable & Fast Model)
     private suspend fun getHuggingFaceAnswer(question: String): String {
-        if (huggingFaceToken.isBlank() || huggingFaceToken.startsWith("YOUR")) throw Exception("Missing Key")
-        val model = "google/flan-t5-large"
+        if (huggingFaceToken.isBlank()) throw Exception("Missing Key")
+        val model = "mistralai/Mistral-7B-Instruct-v0.2"
 
         val json = JSONObject().apply {
             put("inputs", "Answer clearly: $question")
             put("parameters", JSONObject().apply {
-                put("max_new_tokens", 150)
+                put("max_new_tokens", 200)
                 put("temperature", 0.3)
             })
         }
@@ -95,9 +95,9 @@ class AnswerProvider {
         return parseHuggingFaceResponse(response.body?.string()!!)
     }
 
-    // ✅ API #2 — DeepSeek (deepseek-chat)
+    // ✅ API #2 — DeepSeek (fixed endpoint)
     private suspend fun getDeepSeekAnswer(question: String): String {
-        if (deepSeekApiKey.isBlank() || deepSeekApiKey.startsWith("YOUR")) throw Exception("Missing Key")
+        if (deepSeekApiKey.isBlank()) throw Exception("Missing Key")
 
         val json = JSONObject().apply {
             put("model", "deepseek-chat")
@@ -108,7 +108,7 @@ class AnswerProvider {
         }
 
         val request = Request.Builder()
-            .url("https://api.deepseek.com/chat/completions")
+            .url("https://api.deepseek.com/v1/chat/completions")
             .post(json.toString().toRequestBody("application/json".toMediaType()))
             .header("Authorization", "Bearer $deepSeekApiKey")
             .build()
@@ -118,12 +118,12 @@ class AnswerProvider {
         return parseChatResponse(response.body?.string()!!)
     }
 
-    // ✅ API #3 — OpenRouter (zephyr-7b-beta)
+    // ✅ API #3 — OpenRouter (clean headers)
     private suspend fun getOpenRouterAnswer(question: String): String {
-        if (openRouterApiKey.isBlank() || openRouterApiKey.startsWith("YOUR")) throw Exception("Missing Key")
+        if (openRouterApiKey.isBlank()) throw Exception("Missing Key")
 
         val json = JSONObject().apply {
-            put("model", "huggingfaceh4/zephyr-7b-beta:free")
+            put("model", "gryphe/mythomax-l2-13b")
             put("messages", JSONArray().put(JSONObject().apply {
                 put("role", "user")
                 put("content", question)
@@ -134,8 +134,6 @@ class AnswerProvider {
             .url("https://openrouter.ai/api/v1/chat/completions")
             .post(json.toString().toRequestBody("application/json".toMediaType()))
             .header("Authorization", "Bearer $openRouterApiKey")
-            .header("HTTP-Referer", "https://autoqanswer.com")
-            .header("X-Title", "AutoQAnswer")
             .build()
 
         val response = client.newCall(request).execute()
@@ -143,24 +141,27 @@ class AnswerProvider {
         return parseChatResponse(response.body?.string()!!)
     }
 
-    // ✅ API #4 — Cohere (command model)
+    // ✅ API #4 — Cohere
     private suspend fun getCohereAnswer(question: String): String {
-        if (cohereApiKey.isBlank() || cohereApiKey.startsWith("YOUR")) throw Exception("Missing Key")
+        if (cohereApiKey.isBlank()) throw Exception("Missing Key")
 
         val json = JSONObject().apply {
-            put("model", "command")
-            put("prompt", question)
+            put("model", "command-r")
+            put("messages", JSONArray().put(JSONObject().apply {
+                put("role", "user")
+                put("content", question)
+            }))
         }
 
         val request = Request.Builder()
-            .url("https://api.cohere.ai/v1/generate")
+            .url("https://api.cohere.ai/v1/chat")
             .post(json.toString().toRequestBody("application/json".toMediaType()))
             .header("Authorization", "Bearer $cohereApiKey")
             .build()
 
         val response = client.newCall(request).execute()
         if (!response.isSuccessful) throw Exception("HTTP ${response.code}")
-        return parseCohereResponse(response.body?.string()!!)
+        return parseChatResponse(response.body?.string()!!)
     }
 
     // ✅ Response Parsers
@@ -175,11 +176,6 @@ class AnswerProvider {
             .getJSONObject(0)
             .getJSONObject("message")
             .getString("content").trim()
-    }
-
-    private fun parseCohereResponse(response: String): String {
-        val obj = JSONObject(response)
-        return obj.getJSONArray("generations").getJSONObject(0).getString("text").trim()
     }
 
     // ✅ Offline backup
